@@ -1,6 +1,6 @@
 let board = document.getElementById("board");
 
-let mark = 'X';
+// let symbol  = 'X';
 let myTurn = false;
 
 let tile = document.createElement("div");
@@ -9,25 +9,39 @@ tile.id = "tile";
 
 for (let i = 0; i < 9; i++) {
     let tile = document.createElement("div");
-    tile.id = "tile";
-    tile.className = numToString(i);
+    tile.className = "tile";
+    tile.id = numToString(i);
     tiles[i] = tile;
     board.appendChild(tile);
+    console.log(tile);
     tile.addEventListener('click', ()=>{
-        tile.innerHTML = mark;
-    }, myTurn);
+        if(myTurn && tile.innerHTML == ""){
+            socket.emit('moved', {
+                position: i
+            })
+            myTurn = false;
+            console.log(i);
+        }
+    });
 }
 
-var socket = io();
+let socket = io();
 
 socket.on('start game', ()=>{
     console.log('Game ready to start!')
 })
 
-socket.on('player 1 move', ()=>{
+socket.on('move', (data)=>{
     myTurn = true;
     console.log("It's your turn!");
+})
 
+socket.on('update board', (data)=>{
+    console.log('Client is updating its board now')
+    console.log(numToString(data.position));
+    console.log(data.symbol);
+    let tempTile = document.getElementById(numToString(data.position));
+    tempTile.innerHTML = data.symbol;
 })
 
 function numToString(i) {
