@@ -1,8 +1,17 @@
 let board = document.getElementById("board");
+let joinDiv = document.getElementById("join");
+
+//Socket IO
+let socket = io();
+
+//boolean to check if joining the table is available
+let joinable = true;
+let joined = false; 
 
 // let symbol  = 'X';
 let myTurn = false;
 
+//Initialize board
 let tile = document.createElement("div");
 let tiles = [];
 tile.id = "tile";
@@ -25,7 +34,31 @@ for (let i = 0; i < 9; i++) {
     });
 }
 
-let socket = io();
+//Create the join button
+let button = document.createElement("button");
+button.id = "join-btn";
+button.innerHTML = "Join!";
+joinDiv.appendChild(button);
+
+//Add Event Listener for join button
+button.addEventListener('click', ()=>{
+    if(!joined) {
+        socket.emit('join');
+        joined = true;
+    }
+})
+
+
+socket.on('room full', ()=>{
+    console.log('room full')
+    //If there are already two people in the room redirect the next connections to /lobby
+    window.location.replace("/lobby");
+})
+
+socket.on('refresh', ()=>{
+    console.log('ekana refresh');
+    window.location.reload();
+})
 
 socket.on('start game', ()=>{
     console.log('Game ready to start!')

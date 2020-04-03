@@ -21,42 +21,83 @@ app.get('/tictactoe', function (req, res) {
     res.render('tictactoe');
 });
 
+app.get('/lobby', (req, res)=>{
+    res.render('lobby')
+})
+
 let clients = {};
 let players = [];
 let playerCounter = -1; //Zero is our player 1
 let player1 = true;
 let gameStart = false;
 let gameEnd = false;
+let disconnected = false;
 let tiles = ["", "", "", "", "", "", "", "", ""];
 
 io.on('connection', (socket) => {
     console.log('user connected with id: ' + socket.id);
     let id = socket.id;
-    playerCounter++;
 
     socket.on('disconnect', function () {
-        console.log('user disconnected');
+        console.log('user disconnected with previous id: ' + id);
+        console.log("players length: " + players.length)
+        for(let i = 0; i < players.length; i++) {
+            console.log(id + " " + players[i].socket.id);
+            if(id == players[i].socket.id) {
+                disconnected = true;
+            }
+        }
+
+        console.log(disconnected);
+        if(disconnected) {
+            console.log('kanw reset')
+            //Reset the game
+            //Empty the players array
+            players = [];
+            //Set playercounter to -1
+            playerCounter = -1;
+
+            player1 = true;
+            gameStart = false;
+            gameEnd = false;
+            disconnected = false;
+            tiles = ["", "", "", "", "", "", "", "", ""];
+
+            console.log("players length: " + players.length)
+
+            delete clients[id];
+            io.sockets.emit('refresh');
+        }
         delete clients[socket.id];
-        playerCounter--;
     });
+
+    if(playerCounter >= 1) {
+        io.to(id).emit('room full')
+    }
+
+    socket.on('join', ()=>{
+        console.log(id);
+        playerCounter++;
+        //Configure joined player attributes
+        players[playerCounter] = {
+            symbol: playerCounter == 0 ? 'O' : 'X',
+            socket: socket
+        };
+
+        if(players.length == 2 && !gameStart) {
+            io.sockets.emit('start game');
+            //Player 1 starts
+            let playerId = player1 ? 0 : 1;
+            io.to(players[playerId].socket.id).emit('move', {
+                symbol: players[player1 ? 0 : 1].symbol
+            })
+            gameStart = true;
+        }
+    })
 
     clients[id] = socket;
 
-    //Configure player attributes
-    players[playerCounter] = {
-        symbol: playerCounter == 0 ? 'O' : 'X',
-        socket: socket
-    };
-
-    if(players.length == 2 && !gameStart) {
-        io.sockets.emit('start game');
-        //Player 1 starts
-        let playerId = player1 ? 0 : 1;
-        io.to(players[playerId].socket.id).emit('move', {
-            symbol: players[player1 ? 0 : 1].symbol
-        })
-        gameStart = true;
-    }
+    
 
     socket.on('moved', (data)=>{
         console.log("I heard your move")
