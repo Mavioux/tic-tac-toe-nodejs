@@ -123,7 +123,7 @@ io.on('connection', (socket) => {
         if(tiles[0] == tiles[1] && tiles[1] == tiles[2] && tiles[1] != "") {
             gameEnd = true;
         }
-        if(tiles[3] == tiles[14] && tiles[4] == tiles[5] && tiles[4] != "") {
+        if(tiles[3] == tiles[4] && tiles[4] == tiles[5] && tiles[4] != "") {
             gameEnd = true;
         }
         if(tiles[6] == tiles[7] && tiles[7] == tiles[8] && tiles[7] != "") {
