@@ -85,7 +85,12 @@ io.on('connection', (socket) => {
         };
 
         if(players.length == 2 && !gameStart) {
-            io.sockets.emit('start game');
+            //Emit to each player seperately their own symbol for the game and signal the start of the game
+            for(let i = 0; i < players.length; i++) {
+                io.to(players[i].socket.id).emit('start game', {
+                    symbol: players[i].symbol
+                })
+            }
             //Player 1 starts
             let playerId = player1 ? 0 : 1;
             io.to(players[playerId].socket.id).emit('move', {
