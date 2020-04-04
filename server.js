@@ -111,14 +111,57 @@ io.on('connection', (socket) => {
         tiles[data.position] = symbol;
         console.log(tiles);
 
-        //Next Player now gets to play
-        player1 = !player1;
+        
 
         //Emit to both sockets the previous move
         io.sockets.emit('update board', {
             position: data.position,
             symbol: symbol
         })
+
+        //Check if it was a game winning move
+        if(tiles[0] == tiles[1] && tiles[1] == tiles[2] && tiles[1] != "") {
+            gameEnd = true;
+        }
+        if(tiles[3] == tiles[14] && tiles[4] == tiles[5] && tiles[4] != "") {
+            gameEnd = true;
+        }
+        if(tiles[6] == tiles[7] && tiles[7] == tiles[8] && tiles[7] != "") {
+            gameEnd = true;
+        }
+        if(tiles[0] == tiles[3] && tiles[3] == tiles[6] && tiles[3] != "") {
+            gameEnd = true;
+        }
+        if(tiles[1] == tiles[4] && tiles[4] == tiles[7] && tiles[4] != "") {
+            gameEnd = true;
+        }
+        if(tiles[2] == tiles[5] && tiles[5] == tiles[8] && tiles[5] != "") {
+            gameEnd = true;
+        }
+        if(tiles[0] == tiles[4] && tiles[4] == tiles[8] && tiles[4] != "") {
+            gameEnd = true;
+        }
+        if(tiles[2] == tiles[4] && tiles[4] == tiles[6] && tiles[4] != "") {
+            gameEnd = true;
+        }
+
+         //if yes emit to each player whether they won or lost
+        if(gameEnd) {
+            //Winner message
+            playerId = player1 ? 0 : 1;
+            io.to(players[playerId].socket.id).emit('win');
+
+            //Loser message
+            player1 = !player1;
+            playerId = player1 ? 0 : 1;
+            io.to(players[playerId].socket.id).emit('lose');
+            return;
+        }
+        
+        
+
+        //Next Player now gets to play
+        player1 = !player1;
 
         //Emit to the next player
         playerId = player1 ? 0 : 1;

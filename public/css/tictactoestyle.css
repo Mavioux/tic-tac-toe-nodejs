@@ -72,6 +72,17 @@
     margin-top: 10vh;
 }
 
+#reset {
+    text-align: center;
+    font-size: 18px;
+    margin: 0 auto;
+    margin-top: 10vh;
+}
+
+#reset-btn {
+    font-size: 18px;
+}
+
 
 html,
 body {

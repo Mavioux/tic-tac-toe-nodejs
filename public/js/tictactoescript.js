@@ -5,6 +5,8 @@ let namepar = document.getElementById('namepar');
 let waiting = document.getElementById('waiting');
 let info = document.getElementById('playing-info');
 let symbolDiv = document.getElementById('symbol');
+let replayDiv = document.getElementById('reset');
+let resetBtn = document.getElementById('reset-btn');
 
 //Socket IO
 let socket = io();
@@ -69,6 +71,11 @@ name.addEventListener("keyup", function(event) {
     }
   });
 
+//Event Listener for Reset Button
+resetBtn.addEventListener('click', ()=>{
+    console.log('Reset was pressed');
+})
+
 
 //Socket Listener
 socket.on('room full', ()=>{
@@ -104,6 +111,16 @@ socket.on('update board', (data)=>{
     console.log(data.symbol);
     let tempTile = document.getElementById(numToString(data.position));
     tempTile.innerHTML = data.symbol;
+})
+
+socket.on('win', ()=>{
+    info.innerHTML = 'You won!';
+    reset.classList.remove('hidden');
+})
+
+socket.on('lose', ()=>{
+    info.innerHTML = 'You lost!';
+    reset.classList.remove('hidden');
 })
 
 
