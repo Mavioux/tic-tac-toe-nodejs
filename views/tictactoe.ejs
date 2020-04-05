@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link href="/css/tictactoestyle.css" rel="stylesheet" type="text/css" /> 
+    <link href="/css/style.css" rel="stylesheet" type="text/css" /> 
 </head>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -29,6 +30,16 @@
     <div id="playing-info"></div>
     <div id="reset" class="hidden">
         <button id="reset-btn">Reset</button>
+    </div>
+
+    <div id="chat">
+        <div id = "window-chat">
+            <div id="output">
+
+            </div>
+        </div>
+        <input id="message" type = "text" placeholder = "Type a message" /> 
+        <button id="send">Send</button>   
     </div>
 </main>
 

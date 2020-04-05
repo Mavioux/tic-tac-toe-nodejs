@@ -28,6 +28,7 @@ btn.addEventListener('click', ()=> {
         message: message.value,
         name: name.value
     })
+    message.value = "";
 })
 
 // Execute a function when the user releases a key on the keyboard
